@@ -1,0 +1,22 @@
+talospider库的使用————以抓取豆瓣电影TOP250为例
+class DouBanItem(Item)： #生成一个类
+   target_item=TextField(css_select='div.item')#定位在网页检查中存储同类型数据的盒子
+   movietitle=TextField（css_select='span.title')#对盒子中内容进行选择并存储到所需信息movietitle中，其中class用.,id用#
+#(以上两步在class中）
+data = DouBanItem.get_items(url='https://movie.douban.com/top250')
+for i in data:
+  print(i.movietitle)#将data中的title内容取出
+
+注意：
+1.AttrField和TextField的语句使用，根据网页检查中的符号<span class="title">肖申克的救赎</span>用TextField，img width="100" alt="肖申克的救赎" 用AttrField
+2.target_item不能和get_item同用，get_item用于抓取整个网页，get_item用于对网页中每一块分别抓取后存储
+3.若同一个css_select选择了多个内容，则需要对内容进行合并，这一步加在class中
+    def tal_movietitle(self, movietitle):
+        if isinstance(movietitle,str):#str表示字符串，list表示数组，unicode表示代码
+            return movietitle
+        else:
+            temp=''#临时存放movietitle变量
+            for i in movietitle:#对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
+               print(i.text)
+               temp=temp+i.text
+            return temp
