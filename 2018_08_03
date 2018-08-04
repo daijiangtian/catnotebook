@@ -2,6 +2,10 @@ talospider库的使用————以抓取豆瓣电影TOP250为例
 class DouBanItem(Item)： #生成一个类
    target_item=TextField(css_select='div.item')#定位在网页检查中存储同类型数据的盒子
    movietitle=TextField（css_select='span.title')#对盒子中内容进行选择并存储到所需信息movietitle中，其中class用.,id用#
+   
+   #title = TextField()
+   # 不能使用title 会有冲突
+   
 #(以上两步在class中）
 data = DouBanItem.get_items(url='https://movie.douban.com/top250')
 for i in data:
