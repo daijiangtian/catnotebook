@@ -1,58 +1,90 @@
 豆瓣top250 电影爬虫 
 要求：
 1、 将全部的250个电影趴下
-from talospider import AttrField, Item, TextField
-
-class DouBanItem(Item):
-   target_item=TextField(css_select='div.item')
-   movietitle=TextField(css_select='span.title')
-
-   def tal_movietitle(self, movietitle):
-       if isinstance(movietitle, str):  # str表示字符串，list表示数组，unicode表示代码
-           return movietitle
-       else:
-           temp = ''  # 临时存放movietitle变量
-           for i in movietitle:  # 对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
-               print(i.text)
-               temp = temp + i.text
-           return temp
-
-url='https://movie.douban.com/top250?start=0&filter='
-address=[]
-for i in list(range(0,250,25)):
-   address="https://movie.douban.com/top250?start="+str(i)+"&filter="
-   data = DouBanItem.get_items(url=address)
-for i in data:
-    print(i.movietitle)
 2 、电影字段包括  电影名  导演名 主演名  评分 有多少人评价 简介  
 from talospider import AttrField, Item, TextField
+import pymysql
+from pprint import pprint
+
 
 class DouBanItem(Item):
-   target_item=TextField(css_select='div.item')
-   movietitle=TextField(css_select='span.title')
-   othername=TextField(css_select='span.other')
-   abstract = TextField(css_select='div.bd')
-   mark = TextField(css_select='span.rating_num')
-   number = TextField(css_select='span')
-   comments = TextField(css_select='span.inq')
-   def tal_movietitle(self, movietitle):
-       if isinstance(movietitle, str):  # str表示字符串，list表示数组，unicode表示代码
-           return movietitle
-       else:
-           temp = ''  # 临时存放movietitle变量
-           for i in movietitle:  # 对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
-               print(i.text)
-               temp = temp + i.text
-           return temp
+    target_item = TextField(css_select='div.item')
+    movietitle = TextField(css_select='span.title')
+    othername = TextField(css_select='span.other')
+    abstract = TextField(css_select='div.bd')
+    mark = TextField(css_select='span.rating_num')
+    comments = TextField(css_select='span.inq')
+    comments_number=TextField(css_select='span:nth-child(4)') # 针对网页检查中span语句下嵌套多个语句情况，若需调用其中第k条，可运用nth-child(k)
+    website=AttrField(css_select='div.hd>a',attr='href') #所需内容由""包括此时使用AttrField,<a href="https://movie.douban.com/subject/1292052/" class="">
+                           
+    def tal_movietitle(self, movietitle):
+        if isinstance(movietitle, str):  # str表示字符串，list表示数组，unicode表示代码
+            return movietitle
+        else:
+            temp = ''  # 临时存放movietitle变量
+            for i in movietitle:  # 对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
+                temp = temp + i.text
+            return temp
 
+    def tal_othername(self, othername):
+        if isinstance(othername, str):  # str表示字符串，list表示数组，unicode表示代码
+            return othername
+        else:
+            temp = ''  # 临时存放movietitle变量
+            for i in othername:  # 对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
+                temp = temp + i.text
+            return temp
 
-for i in list(range(0,250,25)):
-   address="https://movie.douban.com/top250?start="+str(i)+"&filter="
-   data = DouBanItem.get_items(url=address)
-   for i in data:
-     print(i.movietitle)
-     print(i.othername)
-     print(i.abstract)
-     print(i.mark)
-     print(i.number)
-     print(i.comments)
+    def tal_abstract(self, abstract):
+        if isinstance(abstract, str):  # str表示字符串，list表示数组，unicode表示代码
+            return abstract
+        else:
+            temp = ''  # 临时存放movietitle变量
+            for i in abstract:  # 对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
+                temp = temp + i.text
+            return temp
+
+    def tal_comments(self, comments):
+        if isinstance(comments, str):  # isinstance(object, classinfo),其中，object -- 实例对象，classinfo -- 可以是直接或间接类名、基本类型或者有它们组成的元组。str表示字符串，list表示数组，unicode表示代码，成立返回True
+            return comments
+        else:
+            temp = ''  # 临时存放movietitle变量
+            for i in comments:  # 对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
+                temp = temp + i.text #将comments中包括的所有字符串连接
+            return temp
+
+db = pymysql.connect(host='localhost', port=3306, user='root', passwd='root', db='')
+
+cursor = db.cursor()
+for i in list(range(0, 250, 25)):
+    address = "https://movie.douban.com/top250?start=" + str(i) + "&filter=" #字符串的连接，str(i)将i格式为字符串
+    data = DouBanItem.get_items(url=address)
+    result = []
+    for i in data:
+        print(i.comments_number)
+        print(i.website)
+
+        sql = "INSERT INTO `cat`.`movie` (`movietitle`, `othername`, `abstract`, `mark`, `comments`, `comments_number`,`website`) VALUES ('{movietitle}', '{othername}', '{abstract}',{mark} , '{comments}','{comments_number}','{website}')".format(
+            movietitle= i.movietitle,
+            othername= i.othername,
+            mark=i.mark,
+            comments= i.comments,
+            abstract= i.abstract,
+            comments_number=i.comments_number,
+            website=i.website
+        ) #这里采用格式化函数format，其中的{}代替了原有的%，优点是不需要理会数据类型的问题，单个参数可以多次输出，
+        只需在.format()中填入需要在之前语句中的{}处替换的内容，由于mysql插入语句中需保留'',且只能逐条插入，
+        这种方式可以保证{}中的数据是.format（）内多个内容，从而循环插入
+        print (sql)
+
+        try:
+            cursor.execute(sql)
+            # 提交到数据库执行
+            db.commit()
+        except Exception as e:
+            print (e)
+            # 如果发生错误则回滚
+            db.rollback()
+
+    # sql_2 = "INSERT INTO `stock_db`.`movie` (`title`, `othername`, `abstract`, `mark`, `comments`) VALUES ('111', '111', '111', 111, '111')"
+    # # 执行插入mysql的语句
