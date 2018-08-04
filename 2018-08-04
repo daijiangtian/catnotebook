@@ -1,4 +1,27 @@
 豆瓣top250 电影爬虫 
 要求：
 1、 将全部的250个电影趴下
+from talospider import AttrField, Item, TextField
+
+class DouBanItem(Item):
+   target_item=TextField(css_select='div.item')
+   movietitle=TextField(css_select='span.title')
+
+   def tal_movietitle(self, movietitle):
+       if isinstance(movietitle, str):  # str表示字符串，list表示数组，unicode表示代码
+           return movietitle
+       else:
+           temp = ''  # 临时存放movietitle变量
+           for i in movietitle:  # 对class中movietitle进行修改，先取出其中每一项再将多个内容合并在该项后面
+               print(i.text)
+               temp = temp + i.text
+           return temp
+
+url='https://movie.douban.com/top250?start=0&filter='
+address=[]
+for i in list(range(0,250,25)):
+   address="https://movie.douban.com/top250?start="+str(i)+"&filter="
+   data = DouBanItem.get_items(url=address)
+for i in data:
+    print(i.movietitle)
 2 、电影字段包括  电影名  导演名 主演名  评分 有多少人评价 简介  
