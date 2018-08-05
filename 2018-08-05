@@ -1,0 +1,3 @@
+股票列表爬取 
+urL = http://quote.eastmoney.com/stocklist.html
+要求 股票代码 股票名字  对于url 存入数据库 
