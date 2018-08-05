@@ -1,3 +1,73 @@
 股票列表爬取 
 urL = http://quote.eastmoney.com/stocklist.html
 要求 股票代码 股票名字  对于url 存入数据库 
+import pymysql
+from talospider import TextField,AttrField,Item
+
+db = pymysql.connect(host='localhost', port=3306, user='root', passwd='root', db='')
+cursor = db.cursor()
+class StockItem(Item):
+    target_item = TextField(css_select='div.quotebody li')  # 定位到相同格式的数据存储盒子那一层
+    stock_res = AttrField(css_select='a', attr='name')
+    stock_id = TextField(css_select='a')  # 由于li中只有股票名称为文本形式，故可直接使用a
+    stock_url = AttrField(css_select='a', attr='href')
+
+
+data = StockItem.get_items(url='http://quote.eastmoney.com/stocklist.html')
+
+for i in data:
+    str = i.stock_id
+    index = str.index('(')#截取股票代码和名称，str.index用法：str.index('查找内容',a,b),其中a,b是查找区间，可不填，返回值为查找内容首位位数
+    stock_name = str[:index]#将str从头至第[index]位截取
+    stock_id = str[index + 1:-1]#将str从[index]+1位至末位取出
+    print(stock_name)
+    print(stock_id)
+
+    index = i.stock_url.index('.com/')
+    length = len('.com/')#获取字符串的长度
+    stock_res = i.stock_url[index + length:index + length + 2]#将当前字符串首位数+字符串长度=字符串末尾，从而获得字符串中间某几位
+    print(stock_res)
+
+    print(i.stock_url)
+    sql = "INSERT INTO `cat`.`stocklist` (`code`,`id`,`web`,`res`) VALUES ('{name}','{id}','{url}','{res}')".format(
+        name=stock_name,
+        id=stock_id,
+        url=i.stock_url,
+        res = stock_res
+    )
+    print(sql)
+
+    try:
+        cursor.execute(sql)
+        # 提交到数据库执行
+        db.commit()
+    except Exception as e:
+        print(e)
+        # 如果发生错误则回滚
+        db.rollback()
+        
+  注：1.网站类型如多个<li><a target="_blank" href="http://quote.eastmoney.com/sz000002.html">万科A(000002)</a></li>
+  其中内容<a target="_blank" href="http://quote.eastmoney.com/sz000001.html">平安银行(000001)</a>不同，需要保证target_item落在li步，
+  以保证定位准确，而其中平安银行(000001)的抓取可使用[target=_blank]，具体内容http://www.w3school.com.cn/cssref/css_selectors.asp
+  2.对于网站中所有网址的抓取可以才有BeautifulSoup：                                    
+                                                html = urlopen('http://quote.eastmoney.com/stocklist.html')
+                                                data = BeautifulSoup(html, 'html.parser')
+                                                url = data2.find_all('a')
+                                                for t in url
+                                                    web = t.get('href')
+                                                    print(web)
+    
+    可抓出所有开头为<a的语句中包含的网址
+  3.对于不同的库中数据导入数据库的语句，要保证导入的一致性，for循环中可添加多个变量，如下:
+  for i,j in zip(data1,data2):
+    sql = "INSERT INTO `cat`.`stocklist` (`a`,`b`) VALUES ('{a}','{b}')".format(
+        a=data1,
+        b=data2
+    )
+    print(sql)
+  改自本例中：for i,j in zip(data,url):#data中为股票代码code，url存储的是网址href
+    web = j.get('href')
+    print(web)
+    sql = "INSERT INTO `cat`.`stocklist` (`web`,`code`) VALUES ('{web}','{code}')".format(
+        web=web,
+        code=i.stockcode#每次循环都会从两个库中取出一同存入mysql
