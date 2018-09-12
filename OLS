@@ -1,0 +1,35 @@
+import random
+import numpy as np
+from numpy.linalg import inv
+from numpy import dot
+from numpy import mat
+import pandas as pd
+
+def Y(X1,X2,X3):
+    return 0.65*X1+0.70*X2-0.55*X3+1.95
+
+def Produce():
+    filename = 'data.csv'
+    with open(filename, 'w') as file:
+        file.write('X1,X2,X3,Y \r\n')
+        for i in range(200):
+            random.seed()
+            x1 = random.random() * 10
+            x2 = random.random() * 10
+            x3 = random.random() * 10
+            y = Y(x1, x2, x3)
+            file.write("{x1},{x2},{x3},{y} \r\n".format(x1=x1,x2=x2,x3=x3,y=y))
+Produce()
+dataset = pd.read_csv('data.csv')
+print(dataset)
+temp = dataset.iloc[:,0:3]#取数据集中
+temp['x0'] = 1#截距
+X = temp.iloc[:,[3,0,1,2]]
+Y = dataset.iloc[:,3].values.reshape(200,1)
+#Y =dataset.iloc[:,3].values.reshape(200,1)
+#print(Y)
+#最小二乘法
+theta = dot(dot(inv(dot(X.T,X)),X.T),Y)
+print("最小二乘法计算theta: ",theta.reshape(4,1))
+
+备注：用于计算简单的最小二乘法求解线性回归模型参数的代码
