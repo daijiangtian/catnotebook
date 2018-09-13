@@ -1,0 +1,81 @@
+ #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2018/9/13/013 20:33
+# @Author  : Woe
+# @Site    :
+# @File    : read03.py
+# @Software: PyCharm
+
+
+#Step 1: Importing the libraries 导入库
+import numpy as np
+import pandas as pd
+
+#Step 2: Importing dataset
+dataset = pd.read_csv('Data.csv')
+X = dataset.iloc[ : , :-1].values #除最后一列全部记为X
+Y = dataset.iloc[ : , 3].values #
+print("Step 2: Importing dataset")
+print("X")
+print(X)
+print("Y")
+print(Y)
+
+#Step 3: Handling the missing data
+#https://github.com/scikit-learn/scikit-learn/blob/f0ab589f/sklearn/preprocessing/imputation.py#L63
+#https://github.com/fuqiuai/learning_notes/blob/master/sklearn学习.md
+#这里可以找到有关具体操作，missing_values默认NaN，strategy默认为mean，同坐标数据取均值代替缺失值
+from sklearn.preprocessing import Imputer
+imputer = Imputer(missing_values = "NaN", strategy = "mean", axis = 0)
+imputer = imputer.fit(X[ : , 1:3])#训练X应用上面imputer的操作
+X[ : , 1:3] = imputer.transform(X[ : , 1:3])#用训练结果填充缺失值
+print("---------------------")
+print("Step 3: Handling the missing data")
+print("step2")
+print("X")
+print(X)
+
+#Step 4: Encoding categorical data虚拟变量
+#LabelEncoder可以将标签分配一个0—n_classes-1之间的编码 ，OneHotEncoder为哑编码，可以将有n种值的一个特征变成n个二元的特征，如男或女，春夏秋冬
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+labelencoder_X = LabelEncoder()
+X[ : , 0] = labelencoder_X.fit_transform(X[ : , 0])#第一列为国家名称因此为虚拟变量
+#Creating a dummy variable
+onehotencoder = OneHotEncoder(categorical_features = [0])
+X = onehotencoder.fit_transform(X).toarray()
+labelencoder_Y = LabelEncoder()
+Y =  labelencoder_Y.fit_transform(Y)
+print("---------------------")
+print("Step 4: Encoding categorical data")
+print("X")
+print(X)
+print("Y")
+print(Y)
+
+#Step 5: Splitting the datasets into training sets and Test sets
+from sklearn.model_selection import train_test_split#拆分训练验证集
+X_train, X_test, Y_train, Y_test = train_test_split( X , Y , test_size = 0.2, random_state = 0)
+#将train和test以8：2划分
+print("---------------------")
+print("Step 5: Splitting the datasets into training sets and Test sets")
+print("X_train")
+print(X_train)
+print("X_test")
+print(X_test)
+print("Y_train")
+print(Y_train)
+print("Y_test")
+print(Y_test)
+
+#Step 6: Feature Scaling
+from sklearn.preprocessing import StandardScaler
+#将特征转化成标准正态分布(即均值为0，方差为1),标准化针对列
+sc_X = StandardScaler()
+X_train = sc_X.fit_transform(X_train)
+X_test = sc_X.transform(X_test)
+print("---------------------")
+print("Step 6: Feature Scaling")
+print("X_train")
+print(X_train)
+print("X_test")
+print(X_test)
