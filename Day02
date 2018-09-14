@@ -1,0 +1,31 @@
+#Data Preprocessing
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# matplotlib是python上的一个2D绘图库, matplotlib下的模块pyplott是一个有命令样式的函数集合。
+dataset = pd.read_csv('studentscores.csv')
+print(dataset)
+X = dataset.iloc[ : ,   : 1 ].values #：表示全部行，1表示截到第1列
+Y = dataset.iloc[ : , 1 ].values
+#划分训练集和测试集，拆分比例为3：1
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split( X, Y, test_size = 1/4, random_state = 0)
+
+# Fitting Simple Linear Regression Model to the training set
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()#创建一个线性回归对象regressor，并用于训练训练集
+regressor = regressor.fit(X_train, Y_train)
+
+# Predecting the Result
+Y_pred = regressor.predict(X_test)
+
+# Visualising the Training results
+plt.scatter(X_train , Y_train, color = 'red')#训练集中数据做散点图
+plt.plot(X_train , regressor.predict(X_train), color ='blue')#预测值做曲线图
+
+# Visualizing the test results
+#同样的操作作用于测试集并得到结果
+plt.scatter(X_test , Y_test, color = 'red')
+plt.plot(X_test , regressor.predict(X_test), color ='blue')
+plt.show()
