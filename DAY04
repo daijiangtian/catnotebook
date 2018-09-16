@@ -1,0 +1,67 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+dataset=pd.read_csv('Social_Network_Ads.csv')
+X=dataset.iloc[:,[2,3]].values
+Y=dataset.iloc[:,4].values
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,y_train,y_test=train_test_split(X,Y,test_size=0.25,random_state=0)
+
+from sklearn.preprocessing import StandardScaler
+sc=StandardScaler()
+#公式为：(X-mean)/std  计算时对每个属性/每列分别进行。
+#将数据按期属性（按列进行）减去其均值，并处以其方差。得到的结果是，对于每个属性/每列来说所有数据都聚集在0附近，方差为1。
+#实现时，有两种不同的方式：
+#使用sklearn.preprocessing.scale()函数，可以直接将给定数据进行标准化。
+#使用sklearn.preprocessing.StandardScaler类，使用该类的好处在于可以保存训练集中的参数（均值、方差）直接使用其对象转换测试集数据.
+X_train=sc.fit_transform(X_train)
+X_test=sc.transform(X_test)
+#Logistic Regression该项工作的库将会是一个线性模型库，之所以被称为线性是因为逻辑回归是一个线性分类器，这意味着我们在二维空间中，我们两类用户（购买和不购买）将被一条直线分割。然后导入逻辑回归类。下一步我们将创建该类的对象，它将作为我们训练集的分类器。
+from sklearn.linear_model import LogisticRegression
+classifier=LogisticRegression()
+classifier.fit(X_train,y_train)
+y_pred = classifier.predict(X_test)
+
+#generate confusion martrix每一行的数据总数表示该类别的数据实例的数目。每一列中的数值表示真实数据被预测为该类的数目
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+
+#visuable可观看https://blog.csdn.net/qq_34337272/article/details/79555544#12-figure%E7%BB%98%E5%88%B6%E5%A4%9A%E5%9B%BE
+from matplotlib.colors import ListedColormap
+X_set,y_set=X_train,y_train
+#从坐标向量返回坐标矩阵，X1中行向量由arrange中第一个括号内数组生成，X2中每一列由arrange第二个括号内生成
+X1,X2=np. meshgrid(np. arange(start=X_set[:,0].min()-1, stop=X_set[:, 0].max()+1, step=0.01),
+                   np. arange(start=X_set[:,1].min()-1, stop=X_set[:,1].max()+1, step=0.01))
+#contourf对分类区域间隔进行填充，contour不填充，用训练集得到的预测值做类别的分割线
+plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(),X2.ravel()]).T).reshape(X1.shape),#X1，X2两个1*n维数组合成一个并采用列优先方式重新将数组整型（X1,X2)
+             alpha = 0.75, cmap = ListedColormap(('red', 'green')))
+plt.xlim(X1.min(),X1.max())
+plt.ylim(X2.min(),X2.max())
+for i,j in enumerate(np. unique(y_set)):#np.unique去除重复的元素，enumerate是枚举可遍历所有对象个数
+    plt.scatter(X_set[y_set==j,0],X_set[y_set==j,1],
+                c = ListedColormap(('red', 'green'))(i), label=j)
+plt. title(' LOGISTIC(Training set)')
+plt. xlabel(' Age')
+plt. ylabel(' Estimated Salary')
+plt. legend()
+plt. show()
+
+X_set,y_set=X_test,y_test
+X1,X2=np. meshgrid(np. arange(start=X_set[:,0].min()-1, stop=X_set[:, 0].max()+1, step=0.01),
+                   np. arange(start=X_set[:,1].min()-1, stop=X_set[:,1].max()+1, step=0.01))
+
+plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(),X2.ravel()]).T).reshape(X1.shape),
+             alpha = 0.75, cmap = ListedColormap(('red', 'green')))
+plt.xlim(X1.min(),X1.max())
+plt.ylim(X2.min(),X2.max())
+for i,j in enumerate(np. unique(y_set)):
+    plt.scatter(X_set[y_set==j,0],X_set[y_set==j,1],
+                c = ListedColormap(('red', 'green'))(i), label=j)
+
+plt. title(' LOGISTIC(Test set)')
+plt. xlabel(' Age')
+plt. ylabel(' Estimated Salary')
+plt. legend()
+plt. show()
