@@ -1,0 +1,40 @@
+n=10;beta0=c(1,2)
+hat_beta=array(0,c(nrep,length(beta0)))#array(data,dim),c()生成一个向量
+
+for(k in 1:n)
+{
+  x=array(rnorm(n*length(beta0)),c(n,length(beta0)))
+  y=x%*%beta0+0.05*array(rnorm(n),c(n,1))
+  fit=lm(y~x)
+  hat_beta[k,]=fit$coeff[-1]#由于hat_beta返回值为一个数据框，包含coefficient，residuals等，故用$选择所需数据框内容
+}
+hat_beta
+
+ hat_beta
+           [,1]      [,2]
+ [1,] 1.0041412 1.0041412
+ [2,] 1.0024395 1.0024395
+ [3,] 1.0118425 1.0118425
+ [4,] 1.0006507 1.0006507
+ [5,] 1.0257109 1.0257109
+ [6,] 0.9883648 0.9883648
+ [7,] 1.0021446 1.0021446
+ [8,] 0.9580462 0.9580462
+ [9,] 1.0278862 1.0278862
+[10,] 0.9871392 0.9871392
+
+> fit$coefficients
+(Intercept)          x1          x2 
+ 0.01047452  0.99135708  2.00110525 
+> fit$coefficients[1]
+(Intercept) 
+ 0.01047452 
+> fit$coefficients[2]
+       x1 
+0.9913571 
+> fit$coefficients[3]
+      x2 
+2.001105 
+> fit$coefficients[-1]
+       x1        x2 
+0.9913571 2.0011052 
