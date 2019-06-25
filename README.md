@@ -1,3 +1,2 @@
 # catnotebook
-study R to death
-
+study python to death
