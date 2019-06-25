@@ -24,3 +24,11 @@ for i in range(len(message)):
         print('phone number found: '+ chunk)
 print('Done')
 
+import re
+# phoneNumRegex=re.compile(r'\d\d\d-\d\d\d-\d\d\d\d')
+
+def phoneNumRegex(text):
+    NumRegex= re.compile(r'\d\d\d-\d\d\d-\d\d\d\d')
+    N = NumRegex.search(text)
+    print(N.group())
+phoneNumRegex('my number is 415-555-4242')
