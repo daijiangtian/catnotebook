@@ -1,0 +1,162 @@
+print('hello,world')
+print('what is your name')
+myname = input()
+print('It is good to meet you,' + myname)
+print('the length of your name is')
+print(len(myname))
+print('I am ' + str(29) + 'year old.')
+name = input()
+
+spam = 0
+while spam < 5:
+    print('hello,world')
+    world
+    spam = spam + 1
+while True:
+    print('who are you?')
+name = input()
+if name != 'joe':
+    continue
+print('hello,joe,what is the password')
+password = input()
+if password == 'swordfish':
+    break
+print('access granted')
+print('my name is')
+for i in range(5):
+    print('jimmy five times(' + str(i) + ')')
+print('my name is')
+i = 0
+while i < 5:
+    print('jimmy five times(' + str(i) + ')')
+    i = i + 1
+    
+import random
+for i in range(5):
+    print(random.randint(1, 10))
+spam = print('hello')
+
+
+def spam():
+    eggs = 99
+    bacon()
+    print(eggs)
+
+
+def bacon():
+    ham = 101
+    eggs = 0
+spam()
+
+def spam(divideby):
+    try:
+        return 42 / divideby
+    except ZeroDivisionError:
+        print('Error:Invaild argument')
+print(spam(2))
+print(spam(12))
+print(spam(0))
+
+import random
+secretnumber = random.randint(1, 20)
+print('I am thinking about a number between 1 to 20')
+for guesstaken in range(1, 7):
+    print('take a guess')
+    guess = int(input())
+if guess < secretnumber:
+    print('your guess is too low')
+elif guess > secretnumber:
+    print('your guess is too high')
+else:
+    break
+if guess == secretnumber:
+    print('you guessd my number in ' + str(guesstaken) + ' guesses!')
+else:
+    print('nope,my name is ' + str(secretnumber))
+    
+a = ['cat', 'bat', 'rat', 'elephnant']
+a.index('rat')
+spam = [['cat', 'dog'], [10, 20, 30, 40, 50]]
+supplies = ['pens', 'staplers', 'flame-throwers', 'binders']
+for i in range(len(supplies)):
+    print('index ' + str(i) + ' in supplies is : ' + supplies[i])
+cat = ['fat', 'white', 'loud']
+size, color, disposition = cat
+spam = ['zophie', 'pooka', 'fat-tail', 'pooka']
+spam.insert(1, 'chicken')
+spam.append('moose')
+spam.remove('chicken')
+spam = [2, 5, 3.14, 1, -7]
+spam.sort()
+spam = ['ants', 'cats', 'dogs', 'badgers', 'elephants']
+spam.sort(resverse=True)
+spam.sort(key=str.lower)
+name = 'Diane'
+name[0:2]
+name = 'Diane'
+for i in name:
+    print('***** ' + i + ' *****')
+newname = name[0:5] + ' the' + ' girl'
+print(newname)
+
+# 元组用(),列表用[]，字典用{}
+eggs = ('hello', 42, 0.5)
+print(eggs[0:2])
+tuple(['cat', 'dog', 'chicken'])
+list('hello')
+mycat = {'size': 'fat', 'color': 'grey', 'disposition': 'loud'}
+mycat['size']
+
+birthdays = {'Y': 'Feb,2nd', 'D': 'Jan,10th', 'C': 'Dec,20th'}
+while True:
+    print('Enter the name:(blank to quit)')
+    name = input()
+if name == '':
+    break
+if name in birthdays:
+    print(birthdays[name] + ' is the borthday of ' + name)
+else:
+    print('I do not know the birthday of' + name)
+    print('what is their birthday')
+    bday = input()
+    birthdays[name] = bday
+    print('birthday database updated')
+    print(birthdays)
+
+import pprint
+message = 'It was a bright cold day in April,and the clocks were striking thirteen.'
+count = {}
+for character in message:
+    count.setdefault(character, 0)
+    count[character] = count[character] + 1
+    pprint.pprint(count)
+allguests = {'Alice': {'apples': 5, 'pretzels': 12},
+             'Bob': {'ham': 3, 'apples': 2},
+             'Carol': {'cups': 3, 'apple pies': 1}}
+             
+def total(guest, item):
+    num = 0
+    for k, v in guest.items():
+        num = num + v.get(item, 0)
+    return num
+ 
+print('apple ' + str(total(allguests, 'apples')))
+print('apple pies ' + str(total(allguests, 'apple pies')))
+spam = 'say hi to Bob\'s mother.'
+print('''Dear Alice,
+Eve's cat has been arrested for catnapping,cat burglary,and extortion.
+scincerely,
+Bob''')
+spam.split('\n')
+','.join(['cats', 'dogs', 'bats'])
+' '.join(['my', 'name', 'is', 'Diane'])
+'my name is Diane'.split()
+spam = 'spamspambaconspameggsspamspam
+spam.strip('spam')
+spam.lstrip('spam')
+
+import pyperclip
+pyperclip.copy('Hello,world!')
+print(pyperclip.paste())
+    
+
