@@ -32,3 +32,42 @@ def phoneNumRegex(text):
     N = NumRegex.search(text)
     print(N.group())
 phoneNumRegex('my number is 415-555-4242')
+
+#电话号码和E-mail地址提取程序
+#位电话号码创建一个正则表达式
+import pyperclip,re
+phoneRegex=re.compile(r'''(
+   (\d{3}|(\d{3}\))?
+   (\s|-|\.)?
+   (\d{3})
+   (\s|-|\.)
+   (\d{4})
+   (\s*(ext|x|ext\.)\s*(\d{2,5}))?
+   ))''', re.VERBOSE)
+
+#为E-mail地址创建一个正则表达式
+emailRegex=re.compile(r'''(
+   [a-zA-Z0-9._%+-]+
+   @
+   [a-zA-Z0-9.-]+
+   (\.[a-zA-Z]{2,4})
+   )''',re.VERBOSE)
+
+#在剪贴板文本中找到所有匹配
+text=str(pyperclip.paste())
+matches=[]
+for groups in phoneRegex.findall(text):
+    phoneNum='-'.join([groups[1],groups[3],groups[5]])
+    if groups[8] !='':
+        phoneNum+='x'+groups[8]
+    matches.append(phoneNum)
+for groups in emailRegex.findall(text):
+    matches.append(groups[0])
+
+#所有匹配连接成一个字符串，复制到剪贴板
+if len(matches)>0:
+    pyperclip.copy('\n'.join(matches))
+    print('copied to clipboard:')
+    print('\n'.join(matches))
+else:
+    print('no phone numbers or email addresses found.')
