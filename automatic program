@@ -71,3 +71,27 @@ if len(matches)>0:
     print('\n'.join(matches))
 else:
     print('no phone numbers or email addresses found.')
+
+import shelve,pyperclip,sys
+mcbshelf=shelve.open('mcb')
+#保存剪贴板内容
+if len(sys.argv)==3 and sys.argv[1].lower()=='save':
+    mcbShelf[sys.argv[2]]=pyperclip.paste()
+elif len(sys.argv)==2:
+#列出关键字和加载关键字内容
+  if sys.argv[1].lower()=='list':
+      pyperclip.copy(str(list(mcbShelf.keys())))
+  elif nsys.argv[1] in mcbShelf :
+      pyperclip.copy(mcbShelf[sys.argv[1]])
+mcbShelf.close()
+
+处理
+进口口文件夹
+for folderName，子文件夹，os.walk中的文件名（'D：\\ Bin'）
+    print('The current folder is '+folderName)
+    for subfolder in subfolders:
+        print('subfolder of'+folderName+':'+subfolder)
+    for filename in filenames:
+        print('file inside'+folderName+':'+filename)
+    print('')
+    
